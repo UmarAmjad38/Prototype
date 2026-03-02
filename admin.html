@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — SkillSwap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Nunito', 'sans-serif'] },
+          colors: { primary: { 50:'#eef2ff', 100:'#e0e7ff', 400:'#818cf8', 500:'#6366f1', 600:'#4f46e5', 700:'#4338ca' } }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<!-- Top Navbar -->
+<nav class="fixed top-0 left-0 right-0 z-40 bg-white border-b border-slate-100 h-16 flex items-center px-4 sm:px-6 gap-4">
+  <div class="flex items-center gap-2 text-xl font-black text-primary-600 shrink-0">
+    <span class="w-8 h-8 bg-primary-600 rounded-xl flex items-center justify-center text-white font-black text-sm">S</span>
+    <span class="hidden sm:block">SkillSwap</span>
+    <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-lg ml-1">Admin</span>
+  </div>
+  <div class="flex-1"></div>
+  <div class="flex items-center gap-2">
+    <div class="w-8 h-8 rounded-xl bg-primary-100 flex items-center justify-center text-xs font-black text-primary-600" data-user-initials></div>
+    <span class="hidden sm:block text-sm font-bold text-slate-700" data-user-name></span>
+    <button data-action="logout" class="p-2 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-500 transition ml-1" title="Logout">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<div class="pt-16 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="fixed left-0 top-16 bottom-0 w-56 bg-white border-r border-slate-100 hidden md:flex flex-col p-4 z-30">
+    <p class="text-xs font-black text-slate-400 uppercase tracking-widest px-3 mb-2">Management</p>
+    <nav class="flex flex-col gap-1">
+      <button onclick="showAdminTab('overview')" id="admin-nav-overview"
+        class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition w-full text-left">
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Overview
+      </button>
+      <button onclick="showAdminTab('pending')" id="admin-nav-pending"
+        class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition w-full text-left">
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Pending Skills
+        <span id="pending-badge" class="ml-auto bg-amber-100 text-amber-700 text-xs font-black px-1.5 py-0.5 rounded-lg" id="admin-stat-pending-badge"></span>
+      </button>
+      <button onclick="showAdminTab('all-skills')" id="admin-nav-all-skills"
+        class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition w-full text-left">
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+        All Skills
+      </button>
+      <button onclick="showAdminTab('categories')" id="admin-nav-categories"
+        class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition w-full text-left">
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+        Categories
+      </button>
+      <button onclick="showAdminTab('users')" id="admin-nav-users"
+        class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition w-full text-left">
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        Users
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 md:ml-56 p-4 sm:p-6">
+
+    <!-- Mobile tabs -->
+    <div class="flex md:hidden gap-2 flex-wrap mb-5">
+      <button onclick="showAdminTab('overview')"   class="px-3 py-1.5 rounded-xl text-xs font-bold bg-primary-100 text-primary-700">Overview</button>
+      <button onclick="showAdminTab('pending')"    class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">Pending</button>
+      <button onclick="showAdminTab('all-skills')" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">All Skills</button>
+      <button onclick="showAdminTab('categories')" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">Categories</button>
+      <button onclick="showAdminTab('users')"      class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">Users</button>
+    </div>
+
+    <!-- ── Overview Tab ── -->
+    <section id="admin-tab-overview" class="fade-in">
+      <h1 class="text-xl font-black text-slate-900 mb-1">Admin Overview</h1>
+      <p class="text-slate-500 text-sm font-medium mb-7">Platform health at a glance.</p>
+      <!-- Stats -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="stat-card bg-white border border-slate-100 rounded-3xl p-5 text-center">
+          <div class="text-3xl font-black text-slate-900 mb-0.5" id="admin-stat-users">—</div>
+          <div class="text-xs font-bold text-slate-400">Total Users</div>
+        </div>
+        <div class="stat-card bg-white border border-slate-100 rounded-3xl p-5 text-center">
+          <div class="text-3xl font-black text-primary-600 mb-0.5" id="admin-stat-skills">—</div>
+          <div class="text-xs font-bold text-slate-400">Total Skills</div>
+        </div>
+        <div class="stat-card bg-white border border-slate-100 rounded-3xl p-5 text-center">
+          <div class="text-3xl font-black text-amber-500 mb-0.5" id="admin-stat-pending">—</div>
+          <div class="text-xs font-bold text-slate-400">Pending Review</div>
+        </div>
+        <div class="stat-card bg-white border border-slate-100 rounded-3xl p-5 text-center">
+          <div class="text-3xl font-black text-emerald-600 mb-0.5" id="admin-stat-cats">—</div>
+          <div class="text-xs font-bold text-slate-400">Categories</div>
+        </div>
+      </div>
+      <!-- Quick actions -->
+      <h2 class="text-sm font-black text-slate-700 mb-3">Quick Actions</h2>
+      <div class="grid sm:grid-cols-3 gap-3">
+        <button onclick="showAdminTab('pending')"
+          class="flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-2xl hover:border-amber-200 hover:shadow-sm transition text-left">
+          <div class="w-10 h-10 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0 text-lg">⏱️</div>
+          <div><p class="text-sm font-black text-slate-800">Review Pending</p><p class="text-xs text-slate-400 font-medium">Approve or reject skills</p></div>
+        </button>
+        <button onclick="showAdminTab('categories'); openAddCat()"
+          class="flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-2xl hover:border-primary-200 hover:shadow-sm transition text-left">
+          <div class="w-10 h-10 bg-primary-50 rounded-2xl flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </div>
+          <div><p class="text-sm font-black text-slate-800">Add Category</p><p class="text-xs text-slate-400 font-medium">Create a new skill group</p></div>
+        </button>
+        <button onclick="showAdminTab('users')"
+          class="flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-2xl hover:border-primary-200 hover:shadow-sm transition text-left">
+          <div class="w-10 h-10 bg-sky-50 rounded-2xl flex items-center justify-center shrink-0 text-lg">👥</div>
+          <div><p class="text-sm font-black text-slate-800">Manage Users</p><p class="text-xs text-slate-400 font-medium">View & block members</p></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ── Pending Skills Tab ── -->
+    <section id="admin-tab-pending" class="hidden fade-in">
+      <h2 class="text-xl font-black text-slate-900 mb-1">Pending Skills</h2>
+      <p class="text-slate-500 text-sm font-medium mb-6">Review and approve or reject submissions.</p>
+      <div id="pending-list" class="space-y-3"></div>
+    </section>
+
+    <!-- ── All Skills Tab ── -->
+    <section id="admin-tab-all-skills" class="hidden fade-in">
+      <h2 class="text-xl font-black text-slate-900 mb-1">All Skills</h2>
+      <p class="text-slate-500 text-sm font-medium mb-6">Full list of all skill listings.</p>
+      <div class="bg-white border border-slate-100 rounded-3xl p-5">
+        <div id="all-skills-list"></div>
+      </div>
+    </section>
+
+    <!-- ── Categories Tab ── -->
+    <section id="admin-tab-categories" class="hidden fade-in">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl font-black text-slate-900 mb-0.5">Skill Categories</h2>
+          <p class="text-slate-500 text-sm font-medium">Create and manage skill groupings.</p>
+        </div>
+        <button onclick="openAddCat()"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          New Category
+        </button>
+      </div>
+      <div id="categories-list" class="space-y-3"></div>
+    </section>
+
+    <!-- ── Users Tab ── -->
+    <section id="admin-tab-users" class="hidden fade-in">
+      <h2 class="text-xl font-black text-slate-900 mb-1">Registered Users</h2>
+      <p class="text-slate-500 text-sm font-medium mb-6">View and manage platform members.</p>
+      <div class="bg-white border border-slate-100 rounded-3xl p-5">
+        <div id="users-list"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════════ -->
+
+<!-- Category Add/Edit Modal -->
+<div id="cat-modal" class="hidden fixed inset-0 z-50 bg-black/40 items-center justify-center px-4"
+     onclick="Modal.closeOnBackdrop(event,'cat-modal')">
+  <div class="bg-white rounded-3xl w-full max-w-md p-7 shadow-xl">
+    <div class="flex items-center justify-between mb-6">
+      <h3 id="cat-modal-title" class="text-base font-black text-slate-900">Add Category</h3>
+      <button onclick="Modal.close('cat-modal')" class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="cat-form" onsubmit="submitCatForm(event)" class="space-y-4">
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-1.5">Name <span class="text-red-400">*</span></label>
+        <input name="cat_name" required placeholder="e.g. Technical Skills"
+          class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-400 transition" />
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-1.5">Description</label>
+        <textarea name="cat_description" rows="2" placeholder="Brief description of this category…"
+          class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-400 transition resize-none"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-1.5">Icon (emoji)</label>
+        <input name="cat_icon" placeholder="e.g. 💻" maxlength="4"
+          class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-400 transition" />
+      </div>
+      <div class="flex gap-3 pt-1">
+        <button type="button" onclick="Modal.close('cat-modal')"
+          class="flex-1 py-3 rounded-2xl border border-slate-200 text-slate-600 text-sm font-bold hover:bg-slate-50 transition">Cancel</button>
+        <button type="submit"
+          class="flex-1 py-3 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold transition">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Logout Modal -->
+<div id="logout-modal" class="hidden fixed inset-0 z-50 bg-black/40 items-center justify-center px-4"
+     onclick="Modal.closeOnBackdrop(event,'logout-modal')">
+  <div class="bg-white rounded-3xl max-w-sm w-full p-7 shadow-xl text-center">
+    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+      </svg>
+    </div>
+    <h3 class="text-base font-black text-slate-900 mb-2">Sign Out?</h3>
+    <p class="text-sm text-slate-500 font-medium mb-6">You'll be returned to the home page.</p>
+    <div class="flex gap-3">
+      <button onclick="Modal.close('logout-modal')" class="flex-1 py-2.5 rounded-2xl border border-slate-200 text-slate-600 text-sm font-bold hover:bg-slate-50 transition">Stay</button>
+      <button id="confirm-logout" class="flex-1 py-2.5 rounded-2xl bg-red-500 hover:bg-red-600 text-white text-sm font-bold transition">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="config.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/admin.js"></script>
+<script>initAdmin();</script>
+</body>
+</html>

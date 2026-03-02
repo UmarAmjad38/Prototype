@@ -1,0 +1,12 @@
+{
+  "name": "skillswap-prototype",
+  "version": "1.0.0",
+  "description": "SkillSwap - Skill sharing platform prototype",
+  "scripts": {
+    "dev": "live-server --port=3000 --open=index.html",
+    "start": "live-server --port=3000"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
