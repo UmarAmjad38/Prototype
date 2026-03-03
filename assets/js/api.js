@@ -24,6 +24,7 @@ const API = {
         if (body) opts.body = JSON.stringify(body);
         try {
             const res = await fetch(`${this.baseURL}${path}`, opts);
+            if (res.status === 204) return {}; // Handle No Content
             const data = await res.json();
             if (!res.ok) {
                 const msg = data?.error?.message || data?.message?.[0]?.messages?.[0]?.message || "Something went wrong";
@@ -50,7 +51,7 @@ const API = {
 
     // ── Skill Categories ─────────────────────────────
     async getCategories() {
-        return this.request("GET", "/api/skill-categories?populate=*&pagination[limit]=100", null, false);
+        return this.request("GET", "/api/skill-categories?populate=*&pagination[pageSize]=100", null, false);
     },
 
     async createCategory(data) {
@@ -68,13 +69,13 @@ const API = {
     // ── Skills ───────────────────────────────────────
     async getSkills(params = {}) {
         const qs = new URLSearchParams({
-            "populate[category]": "true",
-            "populate[provider]": "true",
-            "populate[images]": "true",
-            "pagination[limit]": params.limit || 20,
+            "populate[skillCategory]": "true",
+            "populate[owner]": "true",
+            "pagination[pageSize]": params.limit || 20,
             "pagination[page]": params.page || 1,
-            ...(params.status ? { "filters[status][$eq]": params.status } : {}),
-            ...(params.category ? { "filters[category][id][$eq]": params.category } : {}),
+            ...(params.status ? { "filters[skillStatus][$eq]": params.status } : {}),
+            ...(params.category ? { "filters[skillCategory][name][$eq]": params.category } : {}),
+            ...(params.level ? { "filters[level][$eq]": params.level } : {}),
             ...(params.search ? { "filters[title][$containsi]": params.search } : {}),
         }).toString();
         return this.request("GET", `/api/skills?${qs}`, null, false);
@@ -83,15 +84,16 @@ const API = {
     async getSkillById(id) {
         return this.request(
             "GET",
-            `/api/skills/${id}?populate[category]=true&populate[provider]=true&populate[images]=true`,
+            `/api/skills/${id}?populate[skillCategory]=true&populate[owner]=true`,
             null, false
         );
     },
 
     async getMySkills() {
+        const userId = Auth.getUser()?.id;
         return this.request(
             "GET",
-            `/api/skills?filters[provider][id][$eq]=${Auth.getUser()?.id}&populate[category]=true&populate[images]=true&pagination[limit]=100`,
+            `/api/skills?filters[owner][id][$eq]=${userId}&populate[skillCategory]=true&pagination[pageSize]=100`,
             null, true
         );
     },
@@ -110,12 +112,12 @@ const API = {
 
     // Admin: update skill status
     async updateSkillStatus(id, status) {
-        return this.request("PUT", `/api/skills/${id}`, { data: { status } }, false);
+        return this.request("PUT", `/api/skills/${id}`, { data: { skillStatus: status } }, false);
     },
 
     // ── Users (Admin) ────────────────────────────────
     async getUsers() {
-        return this.request("GET", "/api/users?populate=role&pagination[limit]=100", null, false);
+        return this.request("GET", "/api/users?populate=role&pagination[pageSize]=100", null, false);
     },
 
     async updateUser(id, data) {

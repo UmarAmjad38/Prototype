@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "skills",
+  "info": {
+    "singularName": "skill",
+    "pluralName": "skills",
+    "displayName": "skill"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "level": {
+      "type": "enumeration",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "expert"
+      ]
+    },
+    "location": {
+      "type": "string"
+    },
+    "availability": {
+      "type": "string"
+    },
+    "imageUrls": {
+      "type": "json"
+    },
+    "skillCategory": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::skill-category.skill-category",
+      "inversedBy": "skills"
+    },
+    "owner": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "skillStatus": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ]
+    }
+  }
+}

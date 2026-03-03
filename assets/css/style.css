@@ -8,7 +8,77 @@
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
 /* smooth scroll */
-html { scroll-behavior: smooth; }
+html { 
+  scroll-behavior: smooth; 
+  scroll-padding-top: 4rem; /* Height of sticky navbar (h-16) */
+}
+
+/* ── Custom Dropdown ─────────────────────────── */
+.custom-select {
+  position: relative;
+  user-select: none;
+}
+.select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.select-trigger:hover {
+  border-color: #cbd5e1;
+}
+.select-trigger.active {
+  box-shadow: 0 0 0 2px #818cf8;
+}
+.select-trigger svg {
+  transition: transform 0.2s;
+}
+.select-trigger.active svg {
+  transform: rotate(180deg);
+}
+.select-options {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+}
+.select-options.show {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+.select-option {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.select-option:hover {
+  background: #f1f5f9;
+  color: #4f46e5;
+}
+.select-option.selected {
+  background: #eef2ff;
+  color: #4f46e5;
+}
 
 /* base */
 body {
@@ -16,6 +86,17 @@ body {
   color: #1e293b;
   background: #f8fafc;
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main, #main-content {
+  flex: 1 0 auto;
+}
+
+#footer-root {
+  flex-shrink: 0;
 }
 
 /* ── Sidebar active ───────────────────────────── */
