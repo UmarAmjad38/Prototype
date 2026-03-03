@@ -5,8 +5,8 @@
  */
 
 function renderFooter() {
-    const year = new Date().getFullYear();
-    const html = `
+  const year = new Date().getFullYear();
+  const html = `
     <footer class="border-t border-slate-100 bg-white py-8 mt-auto">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-5">
@@ -25,8 +25,6 @@ function renderFooter() {
             <a href="skills.html" class="hover:text-primary-600 transition">Browse Skills</a>
             <a href="register.html" class="hover:text-primary-600 transition">Join Free</a>
             <a href="login.html" class="hover:text-primary-600 transition">Sign In</a>
-            <a href="#" class="hover:text-primary-600 transition">Privacy</a>
-            <a href="#" class="hover:text-primary-600 transition">Terms</a>
           </nav>
 
           <!-- Copyright -->
@@ -35,8 +33,8 @@ function renderFooter() {
       </div>
     </footer>`;
 
-    const root = document.getElementById("footer-root");
-    if (root) root.innerHTML = html;
+  const root = document.getElementById("footer-root");
+  if (root) root.innerHTML = html;
 }
 
 window.renderFooter = renderFooter;

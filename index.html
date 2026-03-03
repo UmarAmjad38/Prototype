@@ -21,13 +21,15 @@
   <link rel="stylesheet" href="assets/css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 </head>
-<body class="bg-white">
+<body class="bg-white min-h-screen flex flex-col">
 
 <!-- Shared Navbar -->
 <div id="navbar-root"></div>
 
+<main class="flex-1">
+
 <!-- ── Hero ──────────────────────────────────────── -->
-<section class="max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-16 text-center">
+<section class="max-w-6xl mx-auto px-4 sm:px-8 pt-16 sm:pt-24 pb-16 text-center">
   <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-50 border border-primary-100 text-primary-700 text-xs font-bold mb-6">
     <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
     Free to join · 100+ skills listed
@@ -65,7 +67,7 @@
 </section>
 
 <!-- ── How it Works ───────────────────────────── -->
-<section id="how-it-works" class="bg-slate-50 py-20">
+<section id="how-it-works" class="bg-slate-50 py-20 scroll-mt-20">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="text-center mb-12">
       <p class="text-xs font-black text-primary-600 uppercase tracking-widest mb-2">How it Works</p>
@@ -109,7 +111,7 @@
 </section>
 
 <!-- ── Skill Categories ───────────────────────── -->
-<section id="categories" class="py-20">
+<section id="categories" class="py-20 scroll-mt-20">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="text-center mb-12">
       <p class="text-xs font-black text-primary-600 uppercase tracking-widest mb-2">Explore</p>
@@ -171,16 +173,17 @@
     </div>
   </div>
 </section>
+</main>
 
 <!-- Shared Footer -->
 <div id="footer-root"></div>
 
 <!-- Scripts -->
-<script src="config.js"></script>
-<script src="assets/js/utils.js"></script>
-<script src="assets/js/api.js"></script>
-<script src="assets/js/navbar.js"></script>
-<script src="assets/js/footer.js"></script>
+<script src="config.js?v=3"></script>
+<script src="assets/js/utils.js?v=3"></script>
+<script src="assets/js/api.js?v=3"></script>
+<script src="assets/js/navbar.js?v=3"></script>
+<script src="assets/js/footer.js?v=3"></script>
 <script>
   renderNavbar("public");
   renderFooter();
@@ -218,8 +221,8 @@
       }
       container.innerHTML = skills.map(s => {
         const a = s.attributes || s;
-        const img = a.images?.data?.[0]?.attributes?.url || a.images?.[0]?.url || "";
-        const cat = a.category?.data?.attributes?.name || a.category?.name || "General";
+        const img = a.imageUrls?.[0] || "";
+        const cat = a.skillCategory?.name || a.skillCategory?.attributes?.name || "General";
         return `
           <a href="skill-detail.html?id=${s.id}" class="skill-card bg-white border border-slate-100 rounded-3xl overflow-hidden hover:border-primary-100">
             <div class="w-full h-36 bg-slate-100 overflow-hidden">

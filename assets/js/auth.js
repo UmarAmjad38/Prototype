@@ -4,6 +4,7 @@
 
 // ── Login Page ──────────────────────────────────
 function initLoginPage() {
+    console.log("Auth: Initializing Login Page...");
     Auth.redirectIfLoggedIn();
 
     const form = document.getElementById("login-form");
@@ -11,9 +12,13 @@ function initLoginPage() {
     const btnText = document.getElementById("login-btn-text");
     const spinner = document.getElementById("login-spinner");
 
-    if (!form) return;
+    if (!form) {
+        console.error("Auth: Login form not found!");
+        return;
+    }
 
     form.addEventListener("submit", async (e) => {
+        console.log("Auth: Login form submitted");
         e.preventDefault();
         errEl.classList.add("hidden");
         btnText.textContent = "Signing in…";
@@ -31,9 +36,11 @@ function initLoginPage() {
             Auth.setSession(res.jwt, me);
             Toast.success("Welcome back!");
             setTimeout(() => {
-                window.location.href = me.role?.type === "admin" ? "admin.html" : "dashboard.html";
-            }, 600);
+                window.location.href = Auth.isAdmin() ? "admin.html" : "dashboard.html";
+            }, 800);
         } catch (err) {
+            console.error("Login error:", err);
+            Toast.error(err.message || "Invalid credentials. Please try again.");
             errEl.textContent = err.message;
             errEl.classList.remove("hidden");
             btnText.textContent = "Sign In";
@@ -45,6 +52,7 @@ function initLoginPage() {
 
 // ── Register Page ────────────────────────────────
 function initRegisterPage() {
+    console.log("Auth: Initializing Register Page...");
     Auth.redirectIfLoggedIn();
 
     const form = document.getElementById("register-form");
@@ -52,9 +60,13 @@ function initRegisterPage() {
     const btnText = document.getElementById("register-btn-text");
     const spinner = document.getElementById("register-spinner");
 
-    if (!form) return;
+    if (!form) {
+        console.error("Auth: Register form not found!");
+        return;
+    }
 
     form.addEventListener("submit", async (e) => {
+        console.log("Auth: Register form submitted");
         e.preventDefault();
         errEl.classList.add("hidden");
 
@@ -64,13 +76,11 @@ function initRegisterPage() {
         const confirmPassword = form.confirm_password.value;
 
         if (password !== confirmPassword) {
-            errEl.textContent = "Passwords do not match.";
-            errEl.classList.remove("hidden");
+            Toast.error("Passwords do not match.");
             return;
         }
         if (password.length < 6) {
-            errEl.textContent = "Password must be at least 6 characters.";
-            errEl.classList.remove("hidden");
+            Toast.error("Password must be at least 6 characters.");
             return;
         }
 
@@ -82,8 +92,10 @@ function initRegisterPage() {
             const res = await API.register({ username, email, password });
             Auth.setSession(res.jwt, res.user);
             Toast.success("Account created! 🎉");
-            setTimeout(() => { window.location.href = "dashboard.html"; }, 600);
+            setTimeout(() => { window.location.href = "dashboard.html"; }, 800);
         } catch (err) {
+            console.error("Register error:", err);
+            Toast.error(err.message || "Could not create account. Please try again.");
             errEl.textContent = err.message;
             errEl.classList.remove("hidden");
             btnText.textContent = "Create Account";
@@ -115,6 +127,9 @@ function populateNavUser() {
     document.querySelectorAll("[data-user-name]").forEach(el => { el.textContent = user.username || user.email; });
     document.querySelectorAll("[data-user-initials]").forEach(el => { el.textContent = getInitials(user.username || user.email); });
     document.querySelectorAll("[data-user-email]").forEach(el => { el.textContent = user.email; });
+    document.querySelectorAll("[data-user-role]").forEach(el => {
+        el.textContent = Auth.isAdmin() ? "Admin" : "Member";
+    });
 }
 
 window.initLoginPage = initLoginPage;
