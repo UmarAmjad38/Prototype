@@ -102,7 +102,9 @@ const Auth = {
     isLoggedIn() { return !!this.getToken(); },
     isAdmin() {
         const user = this.getUser();
-        return user && (user.role?.type === "admin" || user.isAdmin === true);
+        // Fallback for Strapi v5: roles are stripped from /api/users/me
+        const adminEmail = "pepamom735@pazuric.com";
+        return user && (user.role?.type === "admin" || user.isAdmin === true || user.email === adminEmail);
     },
 
     requireLogin() {

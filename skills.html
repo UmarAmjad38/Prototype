@@ -24,8 +24,7 @@
 <!-- Shared Navbar -->
 <div id="navbar-root"></div>
 
-
-<main class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+<main class="max-w-6xl mx-auto px-4 sm:px-8 py-10 flex-1 w-full">
   <!-- Header row -->
   <div class="mb-8">
     <h1 class="text-2xl sm:text-3xl font-black text-slate-900 mb-1">Browse Skills</h1>
@@ -33,25 +32,40 @@
   </div>
 
   <!-- Search + Filters -->
-  <div class="flex flex-col sm:flex-row gap-3 mb-7">
+  <div class="flex flex-col sm:flex-row gap-4 mb-8">
     <div class="relative flex-1">
       <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
       </svg>
       <input id="search-input" type="search" placeholder="Search skills…"
-        class="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-400 transition" />
+        class="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-400 transition shadow-sm" />
     </div>
-    <select id="cat-filter"
-      class="px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-400 transition min-w-[160px]">
-      <option value="">All Categories</option>
-    </select>
-    <select id="level-filter"
-      class="px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-400 transition">
-      <option value="">All Levels</option>
-      <option value="beginner">Beginner</option>
-      <option value="intermediate">Intermediate</option>
-      <option value="expert">Expert</option>
-    </select>
+
+    <!-- Custom Category Dropdown -->
+    <div class="custom-select min-w-[180px]" id="cat-dropdown">
+      <div class="select-trigger" onclick="toggleDropdown('cat-dropdown')">
+        <span class="selected-text">All Categories</span>
+        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+      <div class="select-options">
+        <div class="select-option" onclick="selectOption('cat-dropdown', '', 'All Categories')">All Categories</div>
+        <!-- API Options Injected Here -->
+      </div>
+    </div>
+
+    <!-- Custom Level Dropdown -->
+    <div class="custom-select min-w-[150px]" id="level-dropdown">
+      <div class="select-trigger" onclick="toggleDropdown('level-dropdown')">
+        <span class="selected-text">All Levels</span>
+        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+      <div class="select-options">
+        <div class="select-option" onclick="selectOption('level-dropdown', '', 'All Levels')">All Levels</div>
+        <div class="select-option" onclick="selectOption('level-dropdown', 'beginner', 'Beginner')">Beginner</div>
+        <div class="select-option" onclick="selectOption('level-dropdown', 'intermediate', 'Intermediate')">Intermediate</div>
+        <div class="select-option" onclick="selectOption('level-dropdown', 'expert', 'Expert')">Expert</div>
+      </div>
+    </div>
   </div>
 
   <!-- Results count -->
@@ -75,14 +89,15 @@
   <!-- Pagination -->
   <div id="pagination" class="flex items-center justify-center gap-2 mt-10 hidden"></div>
 </main>
+</main>
 
 <div id="footer-root"></div>
 
-<script src="config.js"></script>
-<script src="assets/js/utils.js"></script>
-<script src="assets/js/api.js"></script>
-<script src="assets/js/navbar.js"></script>
-<script src="assets/js/footer.js"></script>
+<script src="config.js?v=3"></script>
+<script src="assets/js/utils.js?v=3"></script>
+<script src="assets/js/api.js?v=3"></script>
+<script src="assets/js/navbar.js?v=3"></script>
+<script src="assets/js/footer.js?v=3"></script>
 <script>
   renderNavbar("public");
   renderFooter();
@@ -94,21 +109,59 @@
   if (urlParams.get("cat")) catVal = urlParams.get("cat");
   if (urlParams.get("search")) searchVal = urlParams.get("search");
 
-  // Load categories into filter
+  // custom dropdown logic
+  function toggleDropdown(id) {
+    const el = document.getElementById(id);
+    const options = el.querySelector(".select-options");
+    const trigger = el.querySelector(".select-trigger");
+    const isOpen = options.classList.contains("show");
+    
+    // Close all
+    document.querySelectorAll(".select-options").forEach(o => o.classList.remove("show"));
+    document.querySelectorAll(".select-trigger").forEach(t => t.classList.remove("active"));
+    
+    if (!isOpen) { 
+      options.classList.add("show");
+      trigger.classList.add("active");
+    }
+  }
+
+  function selectOption(dropdownId, val, text) {
+    const el = document.getElementById(dropdownId);
+    el.querySelector(".selected-text").textContent = text;
+    el.querySelector(".select-options").classList.remove("show");
+    el.querySelector(".select-trigger").classList.remove("active");
+    
+    if (dropdownId === "cat-dropdown") catVal = val;
+    else levelVal = val;
+    
+    currentPage = 1;
+    loadSkills();
+  }
+
+  // Close on outside click
+  window.addEventListener("click", e => {
+    if (!e.target.closest(".custom-select")) {
+      document.querySelectorAll(".select-options").forEach(o => o.classList.remove("show"));
+      document.querySelectorAll(".select-trigger").forEach(t => t.classList.remove("active"));
+    }
+  });
+
   async function loadCats() {
     try {
       const res = await API.getCategories();
       const cats = res?.data || [];
-      const sel = document.getElementById("cat-filter");
-      cats.forEach(c => {
-        const a = c.attributes || c;
-        const opt = document.createElement("option");
-        opt.value = c.id;
-        opt.textContent = a.name;
-        if (a.name === catVal) opt.selected = true;
-        sel.appendChild(opt);
-      });
-      if (catVal) { /* already set from URL - find id */ }
+      const options = document.querySelector("#cat-dropdown .select-options");
+      let html = `<div class="select-option" onclick="selectOption('cat-dropdown', '', 'All Categories')">All Categories</div>`;
+      html += cats.map(c => {
+        const name = c.attributes?.name || c.name;
+        return `<div class="select-option" onclick="selectOption('cat-dropdown', '${name}', '${name}')">${name}</div>`;
+      }).join("");
+      options.innerHTML = html;
+      
+      if (catVal) {
+        document.querySelector("#cat-dropdown .selected-text").textContent = catVal;
+      }
     } catch { /* ignore */ }
   }
 
@@ -124,6 +177,7 @@
         status: "approved",
         search: searchVal,
         category: catVal,
+        level: levelVal, // Now API handles level if implemented, if not we can add it to api.js
         page: currentPage,
         limit: 9,
       });
@@ -140,10 +194,9 @@
 
       grid.innerHTML = skills.map(s => {
         const a = s.attributes || s;
-        const img = a.images?.data?.[0]?.attributes?.url || "";
-        const cat = a.category?.data?.attributes?.name || a.category?.name || "General";
-        const levelFilter = levelVal ? a.level?.toLowerCase() === levelVal : true;
-        if (!levelFilter) return "";
+        const img = a.imageUrls?.[0] || "";
+        const cat = a.skillCategory?.name || a.skillCategory?.attributes?.name || "General";
+        const providerName = a.owner?.username || a.owner?.attributes?.username || "Anonymous";
         return `
           <a href="skill-detail.html?id=${s.id}" class="skill-card bg-white border border-slate-100 rounded-3xl overflow-hidden flex flex-col">
             <div class="w-full h-36 bg-slate-100 overflow-hidden shrink-0">
@@ -159,12 +212,12 @@
               <h2 class="text-sm font-black text-slate-800 mb-1">${a.title}</h2>
               <p class="text-xs text-slate-500 font-medium line-clamp-2 mb-4 flex-1">${a.description || ""}</p>
               <div class="flex items-center gap-2 mt-auto">
-                <div class="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center text-xs font-black text-primary-600">${getInitials(a.provider?.data?.attributes?.username || "?")}</div>
-                <span class="text-xs font-bold text-slate-500">${a.provider?.data?.attributes?.username || "Anonymous"}</span>
+                <div class="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center text-xs font-black text-primary-600">${getInitials(providerName)}</div>
+                <span class="text-xs font-bold text-slate-500">${providerName}</span>
               </div>
             </div>
           </a>`;
-      }).filter(Boolean).join("");
+      }).join("");
 
       renderPagination();
     } catch (err) {
@@ -189,8 +242,8 @@
   function resetFilters() {
     searchVal = catVal = levelVal = "";
     document.getElementById("search-input").value = "";
-    document.getElementById("cat-filter").value = "";
-    document.getElementById("level-filter").value = "";
+    document.querySelector("#cat-dropdown .selected-text").textContent = "All Categories";
+    document.querySelector("#level-dropdown .selected-text").textContent = "All Levels";
     currentPage = 1; loadSkills();
   }
 
@@ -198,8 +251,6 @@
   document.getElementById("search-input").addEventListener("input", debounce(e => {
     searchVal = e.target.value.trim(); currentPage = 1; loadSkills();
   }, 400));
-  document.getElementById("cat-filter").addEventListener("change", e => { catVal = e.target.value; currentPage = 1; loadSkills(); });
-  document.getElementById("level-filter").addEventListener("change", e => { levelVal = e.target.value; currentPage = 1; loadSkills(); });
 
   // Pre-fill search input
   if (searchVal) document.getElementById("search-input").value = searchVal;

@@ -19,12 +19,12 @@
   <link rel="stylesheet" href="assets/css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col">
+<body class="bg-slate-50 min-h-screen flex flex-col text-slate-900">
 
 <!-- Shared Navbar -->
 <div id="navbar-root"></div>
 
-<main class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+<main class="max-w-4xl mx-auto px-4 sm:px-8 py-12 flex-1 w-full">
   <!-- Loading skeleton -->
   <div id="skill-skeleton" class="animate-pulse space-y-4">
     <div class="w-full h-64 bg-slate-100 rounded-3xl"></div>
@@ -110,11 +110,11 @@
 
 <div id="footer-root"></div>
 
-<script src="config.js"></script>
-<script src="assets/js/utils.js"></script>
-<script src="assets/js/api.js"></script>
-<script src="assets/js/navbar.js"></script>
-<script src="assets/js/footer.js"></script>
+<script src="config.js?v=3"></script>
+<script src="assets/js/utils.js?v=3"></script>
+<script src="assets/js/api.js?v=3"></script>
+<script src="assets/js/navbar.js?v=3"></script>
+<script src="assets/js/footer.js?v=3"></script>
 <script>
   renderNavbar("public");
   renderFooter();
@@ -127,9 +127,9 @@
       const s = res.data;
       if (!s) { showError(); return; }
       const a = s.attributes || s;
-      const provider = a.provider?.data?.attributes || a.provider || {};
-      const cat = a.category?.data?.attributes?.name || a.category?.name || "General";
-      const images = a.images?.data || [];
+      const provider = a.owner?.attributes || a.owner || {};
+      const cat = a.skillCategory?.name || a.skillCategory?.attributes?.name || "General";
+      const images = a.imageUrls || [];
 
       // title + meta
       document.title = `${a.title} — SkillSwap`;
@@ -146,7 +146,7 @@
 
       // Image
       const imgWrap = document.getElementById("skill-image-wrap");
-      const mainImg = images[0]?.attributes?.url || images[0]?.url || "";
+      const mainImg = images[0] || "";
       imgWrap.innerHTML = mainImg
         ? `<img src="${mainImg}" alt="${a.title}" class="w-full h-full object-cover"/>`
         : `<div class="w-full h-full flex items-center justify-center text-7xl">🎓</div>`;
@@ -154,8 +154,7 @@
       // Additional images
       if (images.length > 1) {
         const gallery = document.getElementById("skill-gallery");
-        gallery.innerHTML = images.slice(1).map(img => {
-          const url = img.attributes?.url || img.url || "";
+        gallery.innerHTML = images.slice(1).map(url => {
           return `<img src="${url}" class="w-20 h-20 rounded-2xl object-cover border border-slate-200" alt=""/>`;
         }).join("");
       }
